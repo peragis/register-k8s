@@ -99,13 +99,6 @@ if __name__ == "__main__":
 
     service_token = get_service_account_token(args.namespace, args.service_account_name)
     
-    k8s_api_url = get_k8s_api_url()
-    if k8s_api_url:
-        payload['api_address'] = k8s_api_url
-    else:
-        print("Failed to retrieve Kubernetes API address. Exiting.")
-        exit(1)
-
     if service_token:
         try:
             payload = json.loads(args.payload_str)  # Load base payload
@@ -117,14 +110,21 @@ if __name__ == "__main__":
 
         print(payload)
 
-        try:
-            make_api_request(args.api_url, args.header_name, args.api_token, payload)
-        except Exception as e:  # Catch and handle any exceptions during the API request
-            print(f"An error occurred during API request: {e}")
-            exit(1)
-
     else:
         print("Failed to retrieve service account token. Exiting.")
+        exit(1)
+
+    k8s_api_url = get_k8s_api_url()
+    if k8s_api_url:
+        payload['api_address'] = k8s_api_url
+    else:
+        print("Failed to retrieve Kubernetes API address. Exiting.")
+        exit(1)
+
+    try:
+        make_api_request(args.api_url, args.header_name, args.api_token, payload)
+    except Exception as e:  # Catch and handle any exceptions during the API request
+        print(f"An error occurred during API request: {e}")
         exit(1)
 
 
