@@ -18,17 +18,17 @@ def get_service_account_token(namespace, service_account_name):
         secrets = sa.secrets
 
         if secrets:
-            for secret in secrets:  # Iterate through the secrets list
+            for secret in secrets:
                 secret_name = secret.name
                 secret = api.read_namespaced_secret(name=secret_name, namespace=namespace)
-                if secret.type == "kubernetes.io/service-account-token": # Check the secret type!
+                if secret.type == "kubernetes.io/service-account-token":
                     token = secret.data.get('token')
                     if token:
-                        return token.decode('utf-8')
+                        return token  # No need to decode anymore!
                     else:
                         print(f"Error: Could not find 'token' in secret '{secret_name}'.")
 
-            print(f"Error: No token secret found for service account '{service_account_name}'.") # No secret of the correct type
+            print(f"Error: No token secret found for service account '{service_account_name}'.")
         else:
             print(f"Error: Service account '{service_account_name}' has no secrets.")
 
