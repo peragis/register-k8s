@@ -36,20 +36,6 @@ def get_service_account_token(namespace, service_account_name):
         print(f"Error retrieving service account token: {e}")
     return None
 
-def get_k8s_api_url():
-
-    api_host = os.environ.get("KUBERNETES_SERVICE_HOST")
-    api_port = os.environ.get("KUBERNETES_SERVICE_PORT")
-
-    if api_host and api_port:
-        api_url = f"https://{api_host}:{api_port}"
-        print(f"Kubernetes API URL: {api_url}")
-    else:
-        print("KUBERNETES_SERVICE_HOST or KUBERNETES_SERVICE_PORT environment variables are not set.")
-        return None
-
-    return api_url
-
 def make_api_request(api_url, header_name, api_token, payload):
     """Makes a POST request to the specified API."""
 
@@ -90,6 +76,7 @@ if __name__ == "__main__":
     # Kubernetes parameters
     parser.add_argument("--namespace", dest="namespace", default=os.environ.get("NAMESPACE", "default"), help="Kubernetes namespace (env: NAMESPACE, default: default)")
     parser.add_argument("--service-account-name", dest="service_account_name", default=os.environ.get("SERVICE_ACCOUNT_NAME", "default"), help="Service account name (env: SERVICE_ACCOUNT_NAME, default: default)")
+    parser.add_argument("--k8s-api-url", dest="k8s_api_url", default=os.environ.get("K8S_API_URL", "https://127.0.0.1"), help="External Kubernetes API address")
 
     args = parser.parse_args()
 
@@ -114,12 +101,7 @@ if __name__ == "__main__":
         print("Failed to retrieve service account token. Exiting.")
         exit(1)
 
-    k8s_api_url = get_k8s_api_url()
-    if k8s_api_url:
-        payload['api_address'] = k8s_api_url
-    else:
-        print("Failed to retrieve Kubernetes API address. Exiting.")
-        exit(1)
+    payload['api_address'] = args.k8s_api_url
 
     try:
         make_api_request(args.api_url, args.header_name, args.api_token, payload)
