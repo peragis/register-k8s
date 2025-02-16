@@ -3,6 +3,7 @@ import argparse
 import requests
 import json
 import subprocess
+import re
 from kubernetes import client, config
 
 def get_service_account_token(namespace, service_account_name):
