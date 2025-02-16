@@ -2,8 +2,6 @@ import os
 import argparse
 import requests
 import json
-import subprocess
-import re
 from kubernetes import client, config
 
 def get_service_account_token(namespace, service_account_name):
@@ -37,36 +35,6 @@ def get_service_account_token(namespace, service_account_name):
     except client.ApiException as e:
         print(f"Error retrieving service account token: {e}")
     return None
-
-def get_k8s_api_url_from_cluster_info():
-    """
-    Gets the Kubernetes API URL by running 'kubectl cluster-info' and parsing the output.
-
-    Returns:
-        str: The Kubernetes API URL or None if it couldn't be determined.
-    """
-    try:
-        # Run kubectl cluster-info and capture the output
-        process = subprocess.run(['kubectl', 'cluster-info'], capture_output=True, text=True, check=True)
-        output = process.stdout
-
-        # Use a regular expression to extract the URL
-        match = re.search(r'Kubernetes control plane is running at\s+(https?://.*)', output)
-        if match:
-            api_url = match.group(1)
-            print(f"Kubernetes API URL (from cluster-info): {api_url}")
-            return api_url
-        else:
-            print("Error: Could not parse Kubernetes API URL from 'kubectl cluster-info' output.")
-            return None
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error running 'kubectl cluster-info': {e}")
-        return None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return None
-
 
 def get_k8s_api_url():
 
@@ -146,7 +114,7 @@ if __name__ == "__main__":
         print("Failed to retrieve service account token. Exiting.")
         exit(1)
 
-    k8s_api_url = get_k8s_api_url_from_cluster_info()
+    k8s_api_url = get_k8s_api_url()
     if k8s_api_url:
         payload['api_address'] = k8s_api_url
     else:
