@@ -93,7 +93,7 @@ if __name__ == "__main__":
             print(f"Error decoding payload JSON: {e}")
             exit(1)
 
-        payload['service_token'] = service_token  # Add the token to the payload
+        payload['secret'] = service_token  # Add the token to the payload
 
         print(payload)
 
@@ -101,7 +101,8 @@ if __name__ == "__main__":
         print("Failed to retrieve service account token. Exiting.")
         exit(1)
 
-    payload['api_address'] = args.k8s_api_url
+    payload['asset_data'] = dict()
+    payload['asset_data']['api_address'] = args.k8s_api_url
 
     try:
         make_api_request(args.api_url, args.header_name, args.api_token, payload)
