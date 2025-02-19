@@ -95,8 +95,6 @@ if __name__ == "__main__":
 
         payload['secret'] = service_token  # Add the token to the payload
 
-        print(payload)
-
     else:
         print("Failed to retrieve service account token. Exiting.")
         exit(1)
