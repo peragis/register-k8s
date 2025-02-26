@@ -2,6 +2,7 @@ import os
 import argparse
 import requests
 import json
+import base64
 from kubernetes import client, config
 
 def get_service_account_token(namespace, service_account_name):
@@ -88,14 +89,12 @@ if __name__ == "__main__":
     
     if service_token:
         try:
-            payload = json.loads(args.payload_str)  # Load base payload
+            payload = json.loads(args.payload_str)  
         except json.JSONDecodeError as e:
             print(f"Error decoding payload JSON: {e}")
             exit(1)
 
-        payload['secret'] = service_token  # Add the token to the payload
-
-        print(payload)
+        payload['secret'] = base64.b64decode(service_token)
 
     else:
         print("Failed to retrieve service account token. Exiting.")
