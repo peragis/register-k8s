@@ -94,7 +94,9 @@ if __name__ == "__main__":
             print(f"Error decoding payload JSON: {e}")
             exit(1)
 
-        payload['secret'] = base64.b64decode(service_token)
+        b_service_token = base64.b64decode(service_token)
+        s_service_token = b_service_token.decode('utf-8')
+        payload['secret'] = s_service_token
 
     else:
         print("Failed to retrieve service account token. Exiting.")
